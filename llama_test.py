@@ -11,4 +11,4 @@ response = client.chat(
     ],
 )
 
-print(response)
+print(response['message']['content'])
