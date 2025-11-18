@@ -7,7 +7,7 @@ client = Client(
 response = client.chat(
     model='llama3.2',
     messages=[
-        {'role': 'user', 'content': 'Explain pods vs deployments.'},
+        {'role': 'user', 'content': 'How long is a marathon?'},
     ],
 )
 
