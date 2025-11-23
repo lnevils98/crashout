@@ -8,11 +8,8 @@ def query(prompt: dict):
     response = client.chat(
         model='llama3.2',
         messages=[
-        {'role': 'user', 'content': 'How long is a marathon?'},
+        prompt,
     ],
     )
 
     return response
-
-""" def query(prompt):
-    return prompt["content"] """

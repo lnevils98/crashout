@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 #from ingest import ingest_document
-from query import query
+from app.query import query
 
 app = FastAPI()
 
@@ -21,12 +21,6 @@ def ingest_endpoint(payload: IngestRequest):
     pass
 
 @app.post("/query")
-def query_endpoint(payload: QueryRequest):
-    answer = query(payload.question)
-    return {"answer": answer}
-
-@app.post("/hello")
-def hello(prompt: QueryRequest):
-    prompt = prompt.dict()
+def query_endpoint(prompt: QueryRequest):
     answer = query(prompt)
     return {"message": answer}

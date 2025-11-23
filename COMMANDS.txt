@@ -1,5 +1,7 @@
 docker exec -it ollama ollama run llama3.2
 
+docker run -it --rm -p 8000:80 myimage
+
 uvicorn main:app
 
 curl -X POST "http://127.0.0.1:8000/hello" \
