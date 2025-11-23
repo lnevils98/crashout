@@ -1,5 +1,7 @@
 from ollama import Client
 
+prompt = {'role': 'user', 'content': 'How long is a marathon?'}
+
 client = Client(
     host='http://localhost:11434',
 )

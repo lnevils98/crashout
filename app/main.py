@@ -11,7 +11,8 @@ class IngestRequest(BaseModel):
     text: str
 
 class QueryRequest(BaseModel):
-    question: str
+    role: str
+    content: str
 
 @app.post("/ingest")
 def ingest_endpoint(payload: IngestRequest):
@@ -24,6 +25,8 @@ def query_endpoint(payload: QueryRequest):
     answer = query(payload.question)
     return {"answer": answer}
 
-@app.get("/hello")
-def hello(name: str = "world"):
-    return {"message": f"Hello {name}!"}
+@app.post("/hello")
+def hello(prompt: QueryRequest):
+    prompt = prompt.dict()
+    answer = query(prompt)
+    return {"message": answer}
