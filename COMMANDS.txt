@@ -1,5 +1,8 @@
 docker exec -it ollama ollama run llama3.2
 
+uvicorn main:app
+
 curl -X POST "http://127.0.0.1:8000/hello" \
   -H "Content-Type: application/json" \
   -d '{"role": "user", "content": "How long is a marathon?"}'
+
