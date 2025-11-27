@@ -8,6 +8,8 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
+      - ./entrypoint-ollama.sh:/entrypoint.sh:ro
+    entrypoint: /bin/bash /entrypoint.sh
     restart: unless-stopped
 
   qdrant:
@@ -25,7 +27,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: crashout_fastapi:latest
+    #image: crashout_fastapi:latest
     container_name: crashout_fastapi
     ports:
       - "8000:80"

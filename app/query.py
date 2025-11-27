@@ -1,19 +1,30 @@
 import os
-from typing import Mapping, Any
-from ollama import Client
+from typing import Mapping, Any, Optional, Sequence
 
+# adjust import to match your ollama client package
+from ollama import Client, ChatResponse
 
-def query(prompt: Mapping[str, Any]):
-    # Use OLLAMA_HOST env var when running inside Docker Compose so the
-    # FastAPI container talks to the `ollama` service on the Docker network.
-    # Default to the compose service name (ollama) and port 11434.
-    host = os.getenv("OLLAMA_HOST", "http://ollama:11434")
+_client: Optional["Client"] = None
 
-    client = Client(host=host)
+def _get_client() -> Client:
+    global _client
+    if _client is None:
+        host = os.getenv("OLLAMA_HOST", "http://ollama:11434")
+        _client = Client(host=host)
+    return _client
 
-    response = client.chat(
-        model='llama3.2',
-        messages=[prompt],
-    )
+def query(messages: Sequence[Mapping[str, Any]], model: str = "llama3.2") -> ChatResponse:
+    """
+    messages: sequence of dicts or Message objects, e.g. {"role": "user", "content": "Hello"}
+    Returns a ChatResponse (stream=False).
+    """
+    # Basic structural validation
+    for m in messages:
+        if isinstance(m, dict):
+            if "role" not in m or "content" not in m:
+                raise ValueError("message dict must contain 'role' and 'content' keys")
+
+    client = _get_client()
+    response: ChatResponse = client.chat(model=model, messages=messages, stream=False) # type: ignore
 
     return response
