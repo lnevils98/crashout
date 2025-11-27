@@ -1,10 +1,14 @@
 docker exec -it ollama ollama run llama3.2
 
-docker run -it --rm -p 8000:80 myimage
+docker build -t fastapi .
+
+docker run -it --rm -p 8000:80 --name fastapi fastapi
+
+http://localhost:8000/docs
 
 uvicorn main:app
 
-curl -X POST "http://127.0.0.1:8000/hello" \
+curl -sS -X POST "http://127.0.0.1:8000/query" \
   -H "Content-Type: application/json" \
-  -d '{"role": "user", "content": "How long is a marathon?"}'
+  -d '{"role":"user","content":"How long is a marathon?"}'
 
