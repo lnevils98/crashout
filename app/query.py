@@ -25,6 +25,6 @@ def query(messages: Sequence[Mapping[str, Any]], model: str = "llama3.2") -> Cha
                 raise ValueError("message dict must contain 'role' and 'content' keys")
 
     client = _get_client()
-    response: ChatResponse = client.chat(model=model, messages=messages, stream=False) # type: ignore
+    response: ChatResponse = client.chat(model="llama3.2", messages=messages, stream=False) # type: ignore
 
     return response

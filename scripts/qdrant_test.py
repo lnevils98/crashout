@@ -1,33 +1,26 @@
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import PointStruct, VectorParams, Distance
+from ollama import Client as OllamaClient, ChatResponse
 import requests
-
-#client = QdrantClient(host="localhost", port=6333)
+from typing import Mapping, Any, Optional, Sequence
+import os
 
 url = "http://localhost:11434/api/embed"
+_client: Optional["OllamaClient"] = None
 
-""" payload = {
-    "model": "nomic-embed-text",
-    "input": "Hello world"
-}
+def _get_client() -> OllamaClient:
+    global _client
+    if _client is None:
+        host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        _client = OllamaClient(host=host)
+    return _client
 
-response = requests.post(url, json=payload)
-response.raise_for_status()
+def embed(text:str) -> Sequence[float]:
+    _client = _get_client()
+    response: ChatResponse = _client.embed(model="nomic-embed-text", input=text) # type: ignore
+    return response.embeddings[0] # type: ignore
 
-data = response.json()
-print(data)
-print(len(data["embeddings"][0])) """
-
-def embed(text:str):
-    payload = {
-        "model": "nomic-embed-text",
-        "input": text
-    }
-    response = requests.post(url, json=payload)
-    response.raise_for_status()
-    return response.json()["embeddings"][0]
-
-qdrant_client = QdrantClient(host="localhost", port=6333)
+qdrant_client = QdrantClient(host="localhost", port=6333) # mirror Ollama setup
 
 qdrant_client.recreate_collection(
     collection_name="test_collection",
@@ -54,13 +47,13 @@ for i, doc in enumerate(documents):
 qdrant_client.upsert(collection_name="test_collection", points=points)
 
 query = embed("Tell me about France")
+
 results = qdrant_client.query_points(
     collection_name="test_collection",
     query=query,
-    limit=3
+    limit=2
 )
 
 print("---")
 print(results)
-print(type(results))
-    #print(r.payload["text"], "score:", r.score)
+print(results.points[0].payload["text"])

@@ -38,6 +38,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - OLLAMA_HOST=http://ollama:11434
+      - QDRANT_HOST=http://qdrant:6333
     # Optional: mount the local app directory for development. Remove the volume for immutable production images.
     # - ./app:/code/app:ro
 
