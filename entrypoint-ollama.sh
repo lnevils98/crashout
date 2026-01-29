@@ -20,5 +20,8 @@ done
 echo "Pulling llama3.2 model..."
 /bin/ollama pull llama3.2
 
+echo "Pulling nomic-embed-text model..."
+/bin/ollama pull nomic-embed-text
+
 # Keep the server running
 wait $OLLAMA_PID

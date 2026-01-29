@@ -42,6 +42,16 @@ services:
     # Optional: mount the local app directory for development. Remove the volume for immutable production images.
     # - ./app:/code/app:ro
 
+  frontend:
+    build: ./app/frontend
+    container_name: crashout_frontend
+    ports:
+      - "3000:5173"
+    environment:
+      - VITE_BACKEND_URL=http://backend:5000
+#    depends_on:
+#      - backend
+
 volumes:
   ollama_data:
   qdrant_storage:

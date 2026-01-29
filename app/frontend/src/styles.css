@@ -1,0 +1,514 @@
+/* ----------------------------------------------------------
+   CRASH OUT — PROFESSIONAL GARAGE THEME
+   Deep crimson, industrial steel greys, glass panels,
+   with muted watercolor-supported background
+-----------------------------------------------------------*/
+
+:root{
+  --bg-dark: #212121;          /* garage concrete dark */
+  --bg-overlay: rgba(0,0,0,0.45);
+  --card: rgba(40,40,40,0.75); /* transparent steel/glass */
+  --muted: #b0b0b0;            /* dusty muted red */
+  --accent: #b71c1c;           /* deep crimson */
+  --accent-dark: #8b0000;      /* stronger crimson */
+  --accent-light: #c62828;     /* dark red for user bubble */
+  --metal: #d4d4d4;  
+  --ui-meta-size: 0.75rem;
+  --ui-meta-weight: 600;
+  --ui-meta-spacing: 0.12em;
+  --ui-meta-color: var(--muted);          /* steel text */
+}
+
+/* ----------------------------------------------------------
+   GLOBAL
+-----------------------------------------------------------*/
+
+body {
+  font-family: 'Roboto Slab', Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  color: var(--metal);
+
+  /* Background image from public folder */
+  background: url("/bike-bg.jpg") no-repeat center center fixed;
+  background-size: cover;
+
+  position: relative;
+  overflow-x: hidden;
+
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+}
+
+
+/* Dark overlay and grain as pseudo-elements */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25); /* subtle dark overlay */
+  z-index: -1;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  backdrop-filter: blur(4px) saturate(1.05);
+  -webkit-backdrop-filter: blur(4px) saturate(1.05);
+  opacity: 0.15;
+  z-index: -2;
+}
+
+
+
+.ui-meta {
+  font-size: var(--ui-meta-size);
+  font-weight: var(--ui-meta-weight);
+  letter-spacing: var(--ui-meta-spacing);
+  text-transform: uppercase;
+  color: var(--ui-meta-color);
+}
+
+
+
+/* ----------------------------------------------------------
+   APP LAYOUT
+-----------------------------------------------------------*/
+
+.app{
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+@media (max-width: 600px){
+  .app {
+    padding: 20px 12px;
+  }
+}
+
+/* ----------------------------------------------------------
+   HEADER
+-----------------------------------------------------------*/
+
+.logo {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 20px 24px;
+
+  /* Transparent glass panel */
+  background: rgba(40, 40, 40, 0.5); /* semi-transparent steel */
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);       /* creates frosted glass effect */
+  -webkit-backdrop-filter: blur(12px);
+
+  /* subtle shadow */
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.55),
+    inset 0 0 0 1px rgba(255,255,255,0.04);
+
+  /* fade-in */
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: fadeInDown 0.5s ease forwards;
+}
+
+/* Main CrashOut logo */
+.logo-title {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #c62828;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+  margin: 0;
+}
+
+.logo-title span {
+  color: #e53935;
+}
+
+/* Divider under logo */
+.logo-divider {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(to right, transparent, #b71c1c, transparent);
+  margin: 14px auto 20px;
+  border-radius: 2px;
+}
+
+/* Subheader / tagline */
+.crashout-subheader {
+  font-family: 'Roboto Slab', Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 6px auto 0;
+  max-width: 480px;
+}
+
+.crashout-subheader span {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Fade-in animation */
+@keyframes fadeInDown {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ----------------------------------------------------------
+   COMPANY SELECTOR
+-----------------------------------------------------------*/
+
+.company-selector{
+  margin: 24px 0;
+}
+
+.company-selector label {
+  font-weight: 600;
+  color: var(--metal);
+}
+
+.company-selector select{
+  background: rgba(20,20,20,0.85);
+  color: var(--metal);
+  border: 1px solid var(--accent);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border 0.2s ease, background 0.2s ease;
+}
+
+.company-selector select:focus{
+  border-color: var(--accent-light);
+  outline: none;
+  background: rgba(30,30,30,0.95);
+}
+
+/* ----------------------------------------------------------
+   CHAT WINDOW
+-----------------------------------------------------------*/
+
+.chat-window {
+  background: rgba(20, 20, 20, 0.88);
+  padding: 24px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45),
+              inset 0 0 0 1px rgba(255,255,255,0.04);
+  overflow-y: auto;
+}
+
+
+
+
+/* ----------------------------------------------------------
+   CHAT MESSAGES
+-----------------------------------------------------------*/
+
+.msg{
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  max-width: 80%;
+  line-height: 1.5;
+  opacity: 0;
+  animation: fadeIn 0.25s ease forwards;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* USER BUBBLE */
+.msg.user{
+  background: #c62828;
+  color: #fff5f5;
+  margin-left: auto;
+  text-align: right;
+  border: 1px solid var(--accent-dark);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.msg.user:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* JOEL BUBBLE */
+.msg.joel{
+  background: rgba(55, 55, 55, 0.92);
+  color: #f2f2f2;
+  text-align:left;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.2);
+}
+
+.msg-text{
+  white-space: pre-wrap;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ----------------------------------------------------------
+   SOURCES
+-----------------------------------------------------------*/
+
+.sources{
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.sources ul{
+  padding-left: 20px;
+  margin: 6px 0 0;
+}
+
+a{
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover{
+  color: var(--accent-dark);
+  text-decoration: underline;
+}
+
+/* ----------------------------------------------------------
+   INPUT BAR
+-----------------------------------------------------------*/
+
+.chat-input{
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.chat-input input{
+  flex: 1;
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(20,20,20,0.85);
+  color: #f3f3f3;
+  font-size: 1rem;
+  backdrop-filter: blur(6px);
+  transition: border 0.2s ease, background 0.2s ease;
+}
+
+.chat-input input::placeholder{
+  color: #8a7777;
+}
+
+.chat-input input:focus{
+  border-color: var(--accent);
+  outline: none;
+  background: rgba(30,30,30,0.95);
+}
+
+.chat-input button{
+  padding: 14px 20px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.chat-input button:hover{
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.chat-input button:active{
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.typing{
+  color: var(--muted);
+  margin-top: 10px;
+  font-style: italic;
+}
+
+.chat-header {
+  display: flex;
+  flex-direction: column;      /* stack items vertically */
+  align-items: flex-start;     /* left-align everything for a clean read */
+  background: rgba(40,40,40,0.6);   /* glass panel effect */
+  border-radius: 12px;
+  padding: 12px 16px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  margin-bottom: 16px;
+}
+
+.chat-title {
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #c62828;
+  letter-spacing: 0.02em;
+  margin-bottom: 2px;
+}
+
+.chat-subtitle {
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.chat-context {
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.chat-context span {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ----------------------------------------------------------
+   NAVBAR
+-----------------------------------------------------------*/
+
+.navbar {
+  width: 100%;
+  padding: 18px 24px;
+  background: rgba(20,20,20,0.85);
+  border-bottom: 1px solid #4a4a4a;
+  backdrop-filter: blur(6px);
+  color: var(--metal);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* ----------------------------------------------------------
+   BRAND BUTTON
+-----------------------------------------------------------*/
+
+
+.company-label {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.company-selector {
+  margin: 20px 0 28px;
+}
+
+.company-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.brand-segment {
+  display: flex;
+  background: rgba(20,20,20,0.85);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  overflow: hidden;
+  width: fit-content;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 4px 12px rgba(0,0,0,0.35);
+}
+
+.segment-btn {
+  padding: 10px 22px;
+  background: transparent;
+  border: none;
+  color: var(--metal);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.segment-btn:not(:last-child) {
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+.segment-btn:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.segment-btn.active {
+  background: linear-gradient(
+    180deg,
+    var(--accent-light),
+    var(--accent-dark)
+  );
+  color: white;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
+}
+
+
+/* ----------------------------------------------------------
+MOBILE
+-----------------------------------------------------------*/
+
+@media (max-width: 600px) {
+  .chat-header {
+    align-items: center; /* center all text on small screens */
+    padding: 10px 12px;  /* reduce padding */
+  }
+}
+
+@media (max-width: 600px) {
+  .chat-title {
+    font-size: 1.05rem;   /* slightly smaller than desktop */
+  }
+  
+  .chat-subtitle {
+    font-size: 0.75rem;   /* smaller subtitle */
+  }
+  
+  .chat-context {
+    font-size: 0.65rem;   /* smaller metadata */
+  }
+}
+
+@media (max-width: 600px) {
+  .chat-title {
+    margin-bottom: 1px;
+  }
+
+  .chat-subtitle {
+    margin-bottom: 2px;
+  }
+}
+
