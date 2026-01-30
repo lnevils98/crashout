@@ -5,10 +5,12 @@ set -e
 /bin/ollama serve &
 OLLAMA_PID=$!
 
-# Wait for the server to be ready (poll the API)
-#removed helath check
+echo "Waiting for Ollama server to be ready..."
+until /bin/ollama list > /dev/null 2>&1; do
+  sleep 2
+done
 
-# Pull the model
+# Pull the models
 echo "Pulling llama3.2 model..."
 /bin/ollama pull llama3.2
 
@@ -17,3 +19,4 @@ echo "Pulling nomic-embed-text model..."
 
 # Keep the server running
 wait $OLLAMA_PID
+
