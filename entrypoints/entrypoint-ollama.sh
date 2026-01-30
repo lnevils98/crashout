@@ -8,8 +8,6 @@ OLLAMA_PID=$!
 # Wait for the server to be ready (poll the API)
 #removed helath check
 
-/bin/ollama serve
-
 # Pull the model
 echo "Pulling llama3.2 model..."
 /bin/ollama pull llama3.2
