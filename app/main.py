@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Mapping, Any, Sequence
 
 #from ingest import ingest_document
-from app.query import query
+from app.backend.query import query
 
 app = FastAPI()
 

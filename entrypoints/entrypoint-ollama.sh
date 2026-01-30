@@ -6,15 +6,9 @@ set -e
 OLLAMA_PID=$!
 
 # Wait for the server to be ready (poll the API)
-echo "Waiting for Ollama server to be ready..."
-for i in {1..30}; do
-  if curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then
-    echo "Ollama server is ready!"
-    break
-  fi
-  echo "Attempt $i/30 - waiting for server..."
-  sleep 2
-done
+#removed helath check
+
+/bin/ollama serve
 
 # Pull the model
 echo "Pulling llama3.2 model..."

@@ -8,7 +8,7 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
-      - ./entrypoint-ollama.sh:/entrypoint.sh:ro
+      - ./entrypoints/entrypoint-ollama.sh:/entrypoint.sh:ro
     entrypoint: /bin/bash /entrypoint.sh
     restart: unless-stopped
 
@@ -24,9 +24,7 @@ services:
       QDRANT__SERVICE__GRPC_PORT: 6334
 
   fastapi:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: ./
     #image: crashout_fastapi:latest
     container_name: crashout_fastapi
     ports:

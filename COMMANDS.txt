@@ -11,12 +11,3 @@ uvicorn main:app
 curl -sS -X POST "http://127.0.0.1:8000/query" \
   -H "Content-Type: application/json" \
   -d '{"role":"user","content":"How long is a marathon?"}'
-
-def embed(text:str):
-    payload = {
-        "model": "nomic-embed-text",
-        "input": text
-    }
-    response = requests.post(url, json=payload)
-    response.raise_for_status()
-    return response.json()["embeddings"][0]
