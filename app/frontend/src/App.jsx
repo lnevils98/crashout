@@ -3,7 +3,8 @@ import CompanySelector from "./components/CompanySelector";
 import ChatWindow from "./components/ChatWindow";
 import ChatInput from "./components/ChatInput";
 
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL) ? import.meta.env.VITE_BACKEND_URL : 'http://localhost:5000';
+/* const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL) ? import.meta.env.VITE_BACKEND_URL : 'http://localhost:5000'; */
+const BACKEND_URL = 'http://localhost:8000'; /*try to change to container name */
 
 export default function App() {
   const [company, setCompany] = useState("Trek");
@@ -18,14 +19,14 @@ export default function App() {
     setLoading(true);
 
     try {
-      const resp = await fetch(`${BACKEND_URL}/api/chat`, {
+      const resp = await fetch(`http://localhost:8000/query`, { /* use const */
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, company })
+        body: JSON.stringify({'role': 'user', 'content': 'What is the capital of France?'}) /* incorporate company into request body */
       });
       const data = await resp.json();
-      const joel = { sender: "Joel", text: data.answer, sources: data.sources };
-      setMessages((m) => [...m, Joel]);
+      const joel = { sender: "Joel", text: "Liam is working in it!"};
+      setMessages((m) => [...m, joel]);
     } catch (e) {
       setMessages((m) => [...m, { sender: "Joel", text: "Sorry, Liam hasn't done his part yet." }]);
     } finally {

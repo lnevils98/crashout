@@ -29,7 +29,7 @@ services:
   
     container_name: crashout_fastapi
     ports:
-      - "8000:80"
+      - "8000:8000"
     restart: unless-stopped
     depends_on:
       - ollama
@@ -47,7 +47,7 @@ services:
     ports:
       - "3000:5173"
     environment:
-      - VITE_BACKEND_URL=http://backend:5000
+      - VITE_BACKEND_URL=http://crashout_fastapi:8000
 #    depends_on:
 #      - backend
 

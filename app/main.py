@@ -1,11 +1,20 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Mapping, Any, Sequence
+from fastapi.middleware.cors import CORSMiddleware
 
 #from ingest import ingest_document
 from app.backend.query import query
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # tighten later
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class IngestRequest(BaseModel):
     doc_id: str
