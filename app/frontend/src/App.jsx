@@ -22,10 +22,10 @@ export default function App() {
       const resp = await fetch(`http://localhost:8000/query`, { /* use const */
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({'role': 'user', 'content': 'What is the capital of France?'}) /* incorporate company into request body */
+        body: JSON.stringify({'role': 'user', 'content': text}) /* incorporate company into request body */
       });
       const data = await resp.json();
-      const joel = { sender: "Joel", text: "Liam is working in it!"};
+      const joel = { sender: "Joel", text: data.message.message.content};
       setMessages((m) => [...m, joel]);
     } catch (e) {
       setMessages((m) => [...m, { sender: "Joel", text: "Sorry, Liam hasn't done his part yet." }]);
