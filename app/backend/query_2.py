@@ -8,10 +8,13 @@ from pydantic import BaseModel
 _ollama_client: Optional["OllamaClient"] = None
 _qdrant_client: Optional["QdrantClient"] = None
 
-class QueryRequest(BaseModel):
+class QueryRequest(BaseModel): #try to consolidate classes in one file in the backend directorty
     role: str
     content: str
     company: str
+
+system_prompt ="""You are an AI assistant that helps people with bicycle maintenance questions. You have access to the following pieces of information about bicycle maintenance, which may be relevant to the user's question. Use this information to answer the question as best you can. If the information is not relevant, you can ignore it. Always use the provided information to answer the question, and do not make up information that is not provided.
+Use the provided context to answer the question."""
 
 def _get_ollama_client() -> OllamaClient:
     global _ollama_client
@@ -70,9 +73,6 @@ def chat(messages: Sequence[Mapping[str, Any]], model: str = "llama3.2") -> Chat
     response: ChatResponse = ollama_client.chat(model=model, messages=messages, stream=False) # type: ignore
 
     return response
-
-system_prompt ="""You are an AI assistant that helps people with bicycle maintenance questions. You have access to the following pieces of information about bicycle maintenance, which may be relevant to the user's question. Use this information to answer the question as best you can. If the information is not relevant, you can ignore it. Always use the provided information to answer the question, and do not make up information that is not provided.
-Use the provided context to answer the question."""
 
 def query(query_request: QueryRequest):
     vector = embed(query_request.content)
