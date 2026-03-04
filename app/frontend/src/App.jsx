@@ -25,7 +25,7 @@ export default function App() {
         body: JSON.stringify({'role': 'user', 'content': text, 'company': company})
       });
       const data = await resp.json();
-      const joel = { sender: "Joel", text: data.message.message.content};
+      const joel = { sender: "Joel", text: data.content };
       setMessages((m) => [...m, joel]);
     } catch (e) {
       setMessages((m) => [...m, { sender: "Joel", text: "Sorry, Liam hasn't done his part yet." }]);

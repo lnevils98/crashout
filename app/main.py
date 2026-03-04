@@ -1,10 +1,7 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import Mapping, Any, Sequence
+from app.backend.data_models import IngestRequest, QueryRequest, QueryResponse
 from fastapi.middleware.cors import CORSMiddleware
-
-#from ingest import ingest_document
-from app.backend.query_2 import query
+from app.backend.query import query
 
 app = FastAPI()
 
@@ -16,18 +13,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class IngestRequest(BaseModel):
-    doc_id: str
-    text: str
-
-class QueryRequest(BaseModel):
-    role: str
-    content: str
-    company: str
-
-class QueryResponse(BaseModel):
-    content: str
-
 @app.post("/ingest")
 def ingest_endpoint(payload: IngestRequest):
     #ingest_document(payload.doc_id, payload.text, {})
@@ -36,7 +21,7 @@ def ingest_endpoint(payload: IngestRequest):
 
 @app.post("/query", response_model=QueryResponse)
 def query_endpoint(prompt: QueryRequest):
-    content = query(prompt)
-    return QueryResponse(content=content)
+    return query(prompt)
+    
 
-#query(QueryRequest(role="user", content="What is the capital of France?", company="Trek"))
+query(QueryRequest(role="user", content="What is the capital of France?", company="Trek"))
