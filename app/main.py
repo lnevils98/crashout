@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.backend.data_models import IngestRequest, QueryRequest, QueryResponse
+from app.backend.data_models import IngestRequest, QueryRequest, QueryResponse #figure out absolute paths for testing
 from fastapi.middleware.cors import CORSMiddleware
 from app.backend.query import query
 

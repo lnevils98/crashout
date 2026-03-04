@@ -3,7 +3,7 @@ from qdrant_client.http.models import QueryResponse as QdrantQueryResponse
 from ollama import Client as OllamaClient, ChatResponse
 from typing import Mapping, Any, Optional, Sequence
 import os
-from app.backend.data_models import QueryRequest, QueryResponse
+from app.backend.data_models import QueryRequest, QueryResponse #figure out absolute paths for testing
 
 _ollama_client: Optional["OllamaClient"] = None
 _qdrant_client: Optional["QdrantClient"] = None
