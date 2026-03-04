@@ -4,7 +4,7 @@ from typing import Mapping, Any, Sequence
 from fastapi.middleware.cors import CORSMiddleware
 
 #from ingest import ingest_document
-from app.backend.query import query
+from app.backend.query_2 import query
 
 app = FastAPI()
 
@@ -23,10 +23,10 @@ class IngestRequest(BaseModel):
 class QueryRequest(BaseModel):
     role: str
     content: str
+    company: str
 
-def _clean_query(raw_request: QueryRequest) -> Sequence[Mapping[str, Any]]:
-    request: Mapping[str, Any] = raw_request.model_dump()
-    return [request]
+class QueryResponse(BaseModel):
+    content: str
 
 @app.post("/ingest")
 def ingest_endpoint(payload: IngestRequest):
@@ -34,8 +34,9 @@ def ingest_endpoint(payload: IngestRequest):
     #return {"status": "ok"}
     pass
 
-@app.post("/query")
+@app.post("/query", response_model=QueryResponse)
 def query_endpoint(prompt: QueryRequest):
-    cleaned_prompt = _clean_query(prompt)
-    answer = query(cleaned_prompt)
-    return {"message": answer}
+    content = query(prompt)
+    return QueryResponse(content=content)
+
+#query(QueryRequest(role="user", content="What is the capital of France?", company="Trek"))

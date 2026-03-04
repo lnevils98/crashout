@@ -21,8 +21,8 @@ def query(messages: Sequence[Mapping[str, Any]], model: str = "llama3.2") -> Cha
     # Basic structural validation
     for m in messages:
         if isinstance(m, dict):
-            if "role" not in m or "content" not in m:
-                raise ValueError("message dict must contain 'role' and 'content' keys")
+            if "role" not in m or "content" not in m or "company" not in m:
+                raise ValueError("message dict must contain 'role', 'content', and 'company' keys")
 
     client = _get_client()
     response: ChatResponse = client.chat(model="llama3.2", messages=messages, stream=False) # type: ignore
