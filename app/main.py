@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.backend.data_models import IngestRequest, QueryRequest, QueryResponse #figure out absolute paths for testing
 from fastapi.middleware.cors import CORSMiddleware
 from app.backend.query import query
+from app.backend.ingest import ingest
 
 app = FastAPI()
 
@@ -15,9 +16,8 @@ app.add_middleware(
 
 @app.post("/ingest")
 def ingest_endpoint(payload: IngestRequest):
-    #ingest_document(payload.doc_id, payload.text, {})
-    #return {"status": "ok"}
-    pass
+    ingest(payload)
+    return
 
 @app.post("/query", response_model=QueryResponse)
 def query_endpoint(prompt: QueryRequest):

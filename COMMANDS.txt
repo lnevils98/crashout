@@ -12,4 +12,8 @@ curl -sS -X POST "http://127.0.0.1:8000/query" \
   -H "Content-Type: application/json" \
   -d '{"role":"user","content":"How long is a marathon?", "company":"Trek"}'
 
+curl -sS -X POST "http://127.0.0.1:8000/ingest" \
+  -H "Content-Type: application/json" \
+  -d '{"type":"webpage","collection":"Trek", "location":"https://www.parktool.com/en-us/blog/repair-help/rear-derailleur-adjustment"}'
+
 python -m app.backend.query
