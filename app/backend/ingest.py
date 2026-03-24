@@ -9,18 +9,45 @@ import hashlib
 from app.backend.data_models import IngestRequest
 
 def parse_ul(soup: bs4.BeautifulSoup) -> str:
+    """Parse an unordered list from BeautifulSoup element.
+    
+    Args:
+        soup: BeautifulSoup element with the <ul> tag at the top level.
+        
+    Returns:
+        Formatted string with list items prefixed with '- '.
+    """
     list_items = soup.find_all('li')
     list_items = [li.text.strip() for li in list_items]
     list_items = [f'- {li}' for li in list_items]
     return "\n".join(list_items)
 
 def parse_ol(soup: bs4.BeautifulSoup) -> str:
+    """Parse an ordered list from BeautifulSoup element.
+    
+    Args:
+        soup: BeautifulSoup element with the <ol> tag at the top level.
+        
+    Returns:
+        Formatted string with numbered list items.
+    """
     list_items = soup.find_all('li')
     list_items = [li.text.strip() for li in list_items]
     list_items = [f'{i+1}. {li}' for i, li in enumerate(list_items)]
     return "\n".join(list_items)
 
 def chunkify(content: bs4.element.ResultSet) -> list[list[bs4.element.Tag]]:
+    """Group content elements into chunks organized by headings.
+    
+    Each chunk starts with a heading (h1-h6) and includes all following
+    elements until the next heading is encountered.
+    
+    Args:
+        content: BeautifulSoup ResultSet of HTML elements.
+        
+    Returns:
+        List of chunks, where each chunk is a list of BeautifulSoup Tag objects.
+    """
     bs4_chunks = []
     i = 0
     while i < len(content):
@@ -37,6 +64,16 @@ def chunkify(content: bs4.element.ResultSet) -> list[list[bs4.element.Tag]]:
     return bs4_chunks  # Fix: Return the correct variable
 
 def prettify_chunks(chunks: list[list[bs4.element.Tag]]) -> list[str]:
+    """Convert HTML element chunks into formatted text strings.
+    
+    Processes lists (ul/ol) with special formatting and extracts text from other elements.
+    
+    Args:
+        chunks: List of BeautifulSoup Tag chunks to format.
+        
+    Returns:
+        List of formatted text strings, one per chunk.
+    """
     str_chunks = []  # Initialize list for strings
     for chunk in chunks:
         processed = []
@@ -51,6 +88,17 @@ def prettify_chunks(chunks: list[list[bs4.element.Tag]]) -> list[str]:
     return str_chunks
 
 def scrape(url: str) -> list[str]:
+    """Scrape and parse HTML content from a URL.
+    
+    Fetches a webpage, extracts relevant content (paragraphs, headings, lists),
+    chunks by headings, and formats into text strings.
+    
+    Args:
+        url: URL to scrape.
+        
+    Returns:
+        List of formatted text chunks from the webpage.
+    """
     file = curl_cffi.get(url, impersonate='chrome')
     soup = bs4.BeautifulSoup(file.text, 'html.parser')
     content = soup.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol'])
@@ -61,6 +109,11 @@ def scrape(url: str) -> list[str]:
     return content
 
 def _get_ollama_client() -> OllamaClient:
+    """Get or initialize the Ollama client singleton.
+    
+    Returns:
+        OllamaClient instance configured with host from OLLAMA_HOST env var.
+    """
     global _ollama_client
     if _ollama_client is None:
         host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
@@ -68,18 +121,40 @@ def _get_ollama_client() -> OllamaClient:
     return _ollama_client
 
 def _get_qdrant_client() -> QdrantClient:
+    """Get or initialize the Qdrant client singleton.
+    
+    Returns:
+        QdrantClient instance configured with host from QDRANT_HOST env var.
+    """
     global _qdrant_client
     if _qdrant_client is None:
         url = os.getenv("QDRANT_HOST", "http://localhost:6333")
         _qdrant_client = QdrantClient(url=url)
     return _qdrant_client
 
-def embed(text:str) -> list[float]:
+def embed(text: str) -> list[float]:
+    """Generate embeddings for text using Ollama.
+    
+    Args:
+        text: Text to embed.
+        
+    Returns:
+        List of float values representing the text embedding.
+    """
     _ollama_client = _get_ollama_client()
     response: ChatResponse = _ollama_client.embed(model="nomic-embed-text", input=text) # type: ignore
     return response.embeddings[0] 
 
 def qdrant_write(document: str, collection: str) -> None:
+    """Embed and store a document in Qdrant vector database.
+    
+    Creates a document embedding, generates a unique ID, and stores it in the
+    specified collection. Creates the collection if it doesn't exist.
+    
+    Args:
+        document: Text document to store.
+        collection: Name of the Qdrant collection.
+    """
     vector: list[float] = embed(document)
     point = PointStruct(
         id=document_id(document), #automatically translated to UUID
@@ -106,6 +181,17 @@ def qdrant_write(document: str, collection: str) -> None:
     )
 
 def document_id(document: str, truncate: int = 32) -> str:
+    """Generate a unique ID for a document using SHA256 hash.
+    
+    Normalizes the document text and creates a deterministic hash ID.
+    
+    Args:
+        document: Text to hash.
+        truncate: Number of hash characters to return. Defaults to 32.
+        
+    Returns:
+        Hex digest string of specified length.
+    """
     normalized = " ".join(document.split()).strip().lower()
     encoded = normalized.encode('utf-8')
     hash = hashlib.sha256()
@@ -113,23 +199,26 @@ def document_id(document: str, truncate: int = 32) -> str:
     return hash.hexdigest()[:truncate]
 
 def extract_and_store(url: str, collection: str) -> None:
+    """Scrape a URL and store all content chunks in Qdrant.
+    
+    Args:
+        url: URL to scrape.
+        collection: Qdrant collection to store content in.
+    """
     content = scrape(url)
     for i in content:
         qdrant_write(i, collection=collection)
 
 def ingest(ingest_request: IngestRequest) -> None:
+    """Main ingestion function to process IngestRequest and store content.
+    
+    Currently supports webpage ingestion. Scrapes the specified URL and stores
+    all content chunks in the specified Qdrant collection.
+    
+    Args:
+        ingest_request: IngestRequest containing type, location (URL), and collection name.
+    """
     if ingest_request.type == "webpage":
         extract_and_store(ingest_request.location, collection=ingest_request.collection)
     else:
-        pass
-
-ingest_request = IngestRequest(
-    type="webpage",
-    collection="test_collection",
-    location="https://www.parktool.com/en-us/blog/repair-help/rear-derailleur-adjustment"
-)    
-
-_ollama_client: Optional["OllamaClient"] = None
-_qdrant_client: Optional["QdrantClient"] = None
-
-ingest(ingest_request)
+        raise ValueError(f"Unsupported ingest type: {ingest_request.type}")
