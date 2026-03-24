@@ -114,10 +114,9 @@ def _get_ollama_client() -> OllamaClient:
     Returns:
         OllamaClient instance configured with host from OLLAMA_HOST env var.
     """
-    global _ollama_client
-    if _ollama_client is None:
-        host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-        _ollama_client = OllamaClient(host=host)
+   
+    host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+    _ollama_client = OllamaClient(host=host)
     return _ollama_client
 
 def _get_qdrant_client() -> QdrantClient:
@@ -126,10 +125,9 @@ def _get_qdrant_client() -> QdrantClient:
     Returns:
         QdrantClient instance configured with host from QDRANT_HOST env var.
     """
-    global _qdrant_client
-    if _qdrant_client is None:
-        url = os.getenv("QDRANT_HOST", "http://localhost:6333")
-        _qdrant_client = QdrantClient(url=url)
+    
+    url = os.getenv("QDRANT_HOST", "http://localhost:6333")
+    _qdrant_client = QdrantClient(url=url)
     return _qdrant_client
 
 def embed(text: str) -> list[float]:
