@@ -3,6 +3,7 @@ from qdrant_client.http.models import QueryResponse as QdrantQueryResponse
 from ollama import Client as OllamaClient, ChatResponse
 from typing import Mapping, Any, Optional, Sequence
 import os
+from fastapi import HTTPException
 from app.backend.data_models import QueryRequest, QueryResponse
 
 _ollama_client: Optional["OllamaClient"] = None
@@ -74,9 +75,25 @@ def query(query_request: QueryRequest): #make chatting continuos - keep conversa
     query_request: an instance of the QueryRequest data model e.g. QueryRequest(role="user", content="content", company="Trek")
     Returns an instance of the QueryResponse data model e.g. QueryResponse(content="content").
     """
-    vector = embed(query_request.content)
-    context = search(vector, collection_name=query_request.company, limit=3)
-    prompt = build_prompt(user_input=query_request.content, context=context, system_prompt=system_prompt)
-    response = chat(prompt)
+    try:
+        vector = embed(query_request.content)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to embed text: {e}")
+    
+    try:
+        context = search(vector, collection_name=query_request.company, limit=3)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to search: {e}")
+    
+    try:
+        prompt = build_prompt(user_input=query_request.content, context=context, system_prompt=system_prompt)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to build prompt: {e}")
+    
+    try:
+        response = chat(prompt)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to chat: {e}")
+    
     content = response.message.content
     return QueryResponse(content=content)

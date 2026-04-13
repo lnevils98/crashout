@@ -3,10 +3,10 @@ import curl_cffi
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import PointStruct, VectorParams, Distance
 from ollama import Client as OllamaClient, ChatResponse
-from typing import Mapping, Any, Optional, Sequence
+from fastapi import HTTPException
 import os
 import hashlib
-from app.backend.data_models import IngestRequest
+from app.backend.data_models import IngestRequest, IngestResponse
 
 def parse_ul(soup: bs4.BeautifulSoup) -> str:
     """Parse an unordered list from BeautifulSoup element.
@@ -99,7 +99,11 @@ def scrape(url: str) -> list[str]:
     Returns:
         List of formatted text chunks from the webpage.
     """
-    file = curl_cffi.get(url, impersonate='chrome')
+    try:
+        file = curl_cffi.get(url, impersonate='chrome')
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to fetch URL: {e}")
+    
     soup = bs4.BeautifulSoup(file.text, 'html.parser')
     content = soup.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol'])
 
@@ -114,7 +118,6 @@ def _get_ollama_client() -> OllamaClient:
     Returns:
         OllamaClient instance configured with host from OLLAMA_HOST env var.
     """
-   
     host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
     _ollama_client = OllamaClient(host=host)
     return _ollama_client
@@ -125,7 +128,7 @@ def _get_qdrant_client() -> QdrantClient:
     Returns:
         QdrantClient instance configured with host from QDRANT_HOST env var.
     """
-    
+   
     url = os.getenv("QDRANT_HOST", "http://localhost:6333")
     _qdrant_client = QdrantClient(url=url)
     return _qdrant_client
@@ -140,7 +143,10 @@ def embed(text: str) -> list[float]:
         List of float values representing the text embedding.
     """
     _ollama_client = _get_ollama_client()
-    response: ChatResponse = _ollama_client.embed(model="nomic-embed-text", input=text) # type: ignore
+    try:
+        response: ChatResponse = _ollama_client.embed(model="nomic-embed-text", input=text) # type: ignore
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to generate embedding: {e}")
     return response.embeddings[0] 
 
 def qdrant_write(document: str, collection: str) -> None:
@@ -196,18 +202,22 @@ def document_id(document: str, truncate: int = 32) -> str:
     hash.update(encoded)
     return hash.hexdigest()[:truncate]
 
-def extract_and_store(url: str, collection: str) -> None:
+def extract_and_store(url: str, collection: str) -> int:
     """Scrape a URL and store all content chunks in Qdrant.
     
     Args:
         url: URL to scrape.
         collection: Qdrant collection to store content in.
+        
+    Returns:
+        Number of content chunks that were ingested.
     """
     content = scrape(url)
     for i in content:
         qdrant_write(i, collection=collection)
+    return len(content)
 
-def ingest(ingest_request: IngestRequest) -> None:
+def ingest(ingest_request: IngestRequest) -> IngestResponse:
     """Main ingestion function to process IngestRequest and store content.
     
     Currently supports webpage ingestion. Scrapes the specified URL and stores
@@ -215,8 +225,17 @@ def ingest(ingest_request: IngestRequest) -> None:
     
     Args:
         ingest_request: IngestRequest containing type, location (URL), and collection name.
+        
+    Returns:
+        IngestResponse confirming successful ingestion with metadata.
     """
     if ingest_request.type == "webpage":
-        extract_and_store(ingest_request.location, collection=ingest_request.collection)
+        chunks_ingested = extract_and_store(ingest_request.location, collection=ingest_request.collection)
+        return IngestResponse(
+            status="success",
+            message=f"Successfully ingested {chunks_ingested} content chunks from {ingest_request.location}",
+            collection=ingest_request.collection,
+            chunks_ingested=chunks_ingested
+        )
     else:
-        raise ValueError(f"Unsupported ingest type: {ingest_request.type}")
+        raise HTTPException(status_code=400, detail=f"Unsupported ingest type: {ingest_request.type}")

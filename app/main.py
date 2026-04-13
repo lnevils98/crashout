@@ -16,8 +16,8 @@ app.add_middleware(
 
 @app.post("/ingest")
 def ingest_endpoint(payload: IngestRequest):
-    ingest(payload)
-    return
+    return ingest(payload)
+    
 
 @app.post("/query", response_model=QueryResponse)
 def query_endpoint(prompt: QueryRequest):

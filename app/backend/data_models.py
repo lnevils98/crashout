@@ -5,6 +5,12 @@ class IngestRequest(BaseModel):
     collection: str
     location: str
 
+class IngestResponse(BaseModel):
+    status: str
+    message: str
+    collection: str
+    chunks_ingested: int
+
 class QueryRequest(BaseModel):
     role: str
     content: str
